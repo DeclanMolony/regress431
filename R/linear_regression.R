@@ -23,11 +23,17 @@ simple_linear_regression <- function(dat, response, explanatory){
 
   ### Edit code after here
 
+  ones_matrix <- matrix(rep(1,length(x)),nrow = length(x),ncol = 1)
+
+  x_matrix <- cbind(ones_matrix,x)
+
+  A <- solve(t(x_matrix) %*% x_matrix) %*% t(x_matrix %*% y)
+
   sd_x <- 1
   sd_y <- 1
 
-  beta_0 <- 1
-  beta_1 <- 1
+  beta_0 <- A[1]
+  beta_1 <- A[2]
 
   ### Stop editing
 
