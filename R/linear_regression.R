@@ -14,7 +14,7 @@ simple_linear_regression <- function(dat, response, explanatory){
   x <- dat %>% pull({{explanatory}})
   y <- dat %>% pull({{response}})
 
-  explan_name <- data %>%
+  explan_name <- dat %>%
     select({{explanatory}}) %>%
     names()
 
@@ -23,11 +23,14 @@ simple_linear_regression <- function(dat, response, explanatory){
 
   ### Edit code after here
 
+  x <- cbind(x)
+  y <- cbind(y)
+
   ones_matrix <- matrix(rep(1,length(x)),nrow = length(x),ncol = 1)
 
   x_matrix <- cbind(ones_matrix,x)
 
-  A <- solve(t(x_matrix) %*% x_matrix) %*% t(x_matrix %*% y)
+  A <- solve(t(x_matrix) %*% x_matrix) %*% (t(x_matrix) %*% y)
 
   sd_x <- 1
   sd_y <- 1
@@ -65,14 +68,26 @@ simple_linear_regression <- function(dat, response, explanatory){
 #'
 #' @import dplyr
 #'
-#'@export
+#' @export
 multiple_linear_regression <- function(dat, response) {
 
+  x <- dat %>% dplyr::select(-{{response}})
+  y <- dat %>% dplyr::pull({{response}})
 
+  x <- as.matrix(cbind(1, x))
+  y <- as.matrix(y)
 
-  results <- 0 ### This should be a data frame, with columns named
-                ### "Intercept" and the same variable names as dat.
+  results <- as.data.frame(t(solve(t(x) %*% x) %*% (t(x) %*% y)))
+  results <- results %>%
+    dplyr::rename("Intercept" = 1) ### This should be a data frame, with columns named
+                                   ### "Intercept" and the same variable names as dat.
 
   return(results)
 
 }
+
+
+
+
+
+
