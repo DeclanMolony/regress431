@@ -19,4 +19,7 @@ predict_from_coefs <- function(dat, response, coefs){
 
 
 
+
+
+
 }
