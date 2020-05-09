@@ -18,16 +18,14 @@ simple_linear_regression <- function(dat, response, explanatory){
     select({{explanatory}}) %>%
     names()
 
-  x_bar <- mean(x)
-  y_bar <- mean(y)
-
   ### Edit code after here
 
-  sd_x <- 1
-  sd_y <- 1
+  x_matrix <- as.matrix(cbind(1,x))
 
-  beta_0 <- 1
-  beta_1 <- 1
+  A <- solve(t(x_matrix) %*% x_matrix) %*% (t(x_matrix) %*% y)
+
+  beta_0 <- A[1]
+  beta_1 <- A[2]
 
   ### Stop editing
 
@@ -59,14 +57,25 @@ simple_linear_regression <- function(dat, response, explanatory){
 #'
 #' @import dplyr
 #'
-#'@export
+#' @export
 multiple_linear_regression <- function(dat, response) {
 
+  x <- dat %>% dplyr::select(-{{response}})
+  y <- as.matrix(dat %>% dplyr::pull({{response}}))
 
+  x <- as.matrix(cbind(1, x))
 
-  results <- 0 ### This should be a data frame, with columns named
-                ### "Intercept" and the same variable names as dat.
+  results <- as.data.frame(t(solve(t(x) %*% x) %*% (t(x) %*% y)))
+  results <- results %>%
+    dplyr::rename("Intercept" = 1) ### This should be a data frame, with columns named
+                                   ### "Intercept", and the same variable names as dat.
 
   return(results)
 
 }
+
+
+
+
+
+
