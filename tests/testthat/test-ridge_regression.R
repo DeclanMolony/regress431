@@ -4,7 +4,7 @@ test_that("ridge regression correctly calculates coefficients", {
     dplyr::select(mpg, hp, cyl) %>%
     ridge_regression(mpg, lambda = 0.5)
 
-  mtcars2 <- mtcars2 <- mtcars %>%
+  mtcars2 <- mtcars %>%
     dplyr::select(mpg, cyl, hp) %>%
     dplyr::mutate(
       cyl = scale(cyl),
