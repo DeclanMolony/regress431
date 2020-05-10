@@ -18,9 +18,18 @@
 #' @export
 ridge_regression <- function(dat, response, lambda) {
 
+  x <- dat %>% dplyr::select(-{{response}})
+  y <- as.matrix(dat %>% dplyr::pull({{response}}))
+
+  x <- scale(x)
+  x <- as.matrix(cbind(1, x))
+
+  results <- as.data.frame(t(solve(t(x) %*% x + lambda*diag(ncol(x))) %*% (t(x) %*% y)))
+  results <- results %>%
+    dplyr::rename("Intercept" = 1)
 
 
-  results <- 0
+  results <- cbind(results,lambda)
   ### This should be a data frame, with columns named
   ### "Intercept" and the same variable names as dat, and also a column
   ### called "lambda".
