@@ -14,6 +14,7 @@
 #' @return A data frame of coefficients
 #'
 #' @import dplyr
+#' @import purrr
 #'
 #' @export
 ridge_regression <- function(dat, response, lambda) {
@@ -24,7 +25,11 @@ ridge_regression <- function(dat, response, lambda) {
   x <- scale(x)
   x <- as.matrix(cbind(1, x))
 
-  results <- as.data.frame(t(solve(t(x) %*% x + lambda*diag(ncol(x))) %*% (t(x) %*% y)))
+  results <- data.frame(nrow)
+  for (i in 1:length(lambda)){
+  results[i] <- as.data.frame(t(solve(t(x) %*% x + lambda[i]*diag(ncol(x))) %*% (t(x) %*% y)))
+
+  }
   results <- results %>%
     dplyr::rename("Intercept" = 1)
 
