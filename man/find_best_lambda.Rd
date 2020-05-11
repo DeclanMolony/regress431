@@ -4,7 +4,7 @@
 \alias{find_best_lambda}
 \title{Determines the best penalty term from a set of options}
 \usage{
-find_best_lambda(train_dat, test_dat, response, lambdas)
+find_best_lambda(train_dat, test_dat, response, lambda)
 }
 \arguments{
 \item{train_dat}{A data frame to construct the model from}
