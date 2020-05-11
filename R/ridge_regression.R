@@ -28,6 +28,7 @@ ridge_regression_coefs <- function(x, y, lambda){
 #' @return A data frame of coefficients
 #'
 #' @import dplyr
+#' @import purrr
 #'
 #' @export
 ridge_regression <- function(dat, response, lambda) {
