@@ -105,6 +105,9 @@ find_best_lambda <- function(train_dat, test_dat, response, lambda) {
   x <- scale(x)
   x <- as.matrix(cbind(1, x))
 
+  lambda_errors <- purrr::map_dfr(lambda, ~find_best_lambda_helper(x,y,y_test,.x))
+
+
 
   ### lambda_errors should be a data frame with two columns: "lambda" and "error"
   ### For each lambda, you should record the resulting Sum of Squared error
