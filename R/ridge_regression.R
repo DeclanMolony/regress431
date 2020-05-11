@@ -1,3 +1,17 @@
+#' asdf
+#'
+#' @param
+#'
+ridge_regression_coefs <- function(x, y, lambda){
+
+  results <- as.data.frame(t(solve(t(x) %*% x + lambda*diag(ncol(x))) %*% (t(x) %*% y)))
+
+  return(results)
+
+}
+
+
+
 #' Implements ridge regression with many predictors
 #'
 #' This function computes coefficients for ridge regression
@@ -24,16 +38,13 @@ ridge_regression <- function(dat, response, lambda) {
   x <- scale(x)
   x <- as.matrix(cbind(1, x))
 
-  results <- data.frame(nrow)
-  for (i in 1:length(lambda)){
-  results[i] <- as.data.frame(t(solve(t(x) %*% x + lambda[i]*diag(ncol(x))) %*% (t(x) %*% y)))
+  results <- purrr::map_dfr(lambda, ~ridge_regression_coefs(x,y,.x))
 
-  }
   results <- results %>%
     dplyr::rename("Intercept" = 1)
-
-
   results <- cbind(results,lambda)
+
+
   ### This should be a data frame, with columns named
   ### "Intercept" and the same variable names as dat, and also a column
   ### called "lambda".
@@ -59,7 +70,7 @@ ridge_regression <- function(dat, response, lambda) {
 #' @import dplyr
 #'
 #' @export
-find_best_lambda <- function(train_dat, test_dat, response, lambdas) {
+find_best_lambda <- function(train_dat, test_dat, response, lambda) {
 
 
   ### lambda_errors should be a data frame with two columns: "lambda" and "error"
