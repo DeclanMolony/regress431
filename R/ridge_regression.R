@@ -1,7 +1,14 @@
-#' asdf
+#' Calculates the matrix of Coefficients used for ridge regression
 #'
-#' @param
+#' This helper function only takes a single lambda value
 #'
+#' @param x A matrix of observations and intercepts' column of ones
+#' @param y A matrix of a response variable's observations
+#' @param lambda A single lambda value
+#'
+#' @return A dataframe of coefficients
+#'
+#' @import dplyr
 ridge_regression_coefs <- function(x, y, lambda){
 
   results <- as.data.frame(t(solve(t(x) %*% x + lambda*diag(ncol(x))) %*% (t(x) %*% y)))
@@ -39,11 +46,12 @@ ridge_regression <- function(dat, response, lambda) {
   x <- scale(x)
   x <- as.matrix(cbind(1, x))
 
-  results <- purrr::map_dfr(lambda, ~ridge_regression_coefs(x,y,.x))
+  results <- purrr::map_dfr(lambda, ~ridge_regression_coefs(x,y,.x)) #map multiple lambda coefs to a dataframe
 
   results <- results %>%
-    dplyr::rename("Intercept" = 1)
-  results <- cbind(results,lambda)
+    dplyr::rename("Intercept" = 1) #change column name
+
+  results <- cbind(results,lambda) #add lambda column
 
 
   ### This should be a data frame, with columns named
@@ -54,10 +62,19 @@ ridge_regression <- function(dat, response, lambda) {
 
 }
 
-#' asdfsdf
+#' Calculates the SSE using training and test data depending on a given lambda value
 #'
-#' @param
+#' This helper function only takes a single lambda value
 #'
+#' @param x A matrix of observations and intercepts' column of ones
+#' @param y A matrix of a response variable's training observations
+#' @param y_test A matrix of a response variable's test observations
+#' @param lambda A single lambda value
+#'
+#' @return A dataframe of the lambda value and its SSE based on test data
+#'
+#' @import dplyr
+#' @import purrr
 find_best_lambda_helper <- function(x,y,y_test,lambda) {
 
   coefs <- as.data.frame(t(solve(t(x) %*% x + lambda*diag(ncol(x))) %*% (t(x) %*% y)))
@@ -67,8 +84,10 @@ find_best_lambda_helper <- function(x,y,y_test,lambda) {
   combined <- x * coefs2 #multiply the explanatory variables by their corresponding coefficients
   combined <- data.frame(rowSums(combined)) #find the row sums, or predicted values of each row
   combined <- cbind(y_test,combined)
+
   combined <- combined %>%
     dplyr::rename("predicted_value" = rowSums.combined.)
+
   combined <- combined %>%
     mutate(diff = ((y_test - predicted_value)^2)) %>%
     summarise(error = sum(diff))
@@ -94,6 +113,7 @@ find_best_lambda_helper <- function(x,y,y_test,lambda) {
 #' @return A data frame of penalty terms and resulting errors
 #'
 #' @import dplyr
+#' @import purrr
 #'
 #' @export
 find_best_lambda <- function(train_dat, test_dat, response, lambda) {
@@ -106,8 +126,6 @@ find_best_lambda <- function(train_dat, test_dat, response, lambda) {
   x <- as.matrix(cbind(1, x))
 
   lambda_errors <- purrr::map_dfr(lambda, ~find_best_lambda_helper(x,y,y_test,.x))
-
-
 
   ### lambda_errors should be a data frame with two columns: "lambda" and "error"
   ### For each lambda, you should record the resulting Sum of Squared error
